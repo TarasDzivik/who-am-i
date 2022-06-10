@@ -9,6 +9,7 @@ import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
@@ -17,12 +18,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
-public class PersistentGame implements Game, SynchronousGame {
+public class 	PersistentGame implements Game, SynchronousGame {
 
 	private final Lock turnLock = new ReentrantLock();
 	private final String id;
 
 	private final Queue<GameState> turns = new LinkedBlockingQueue<>();
+	private final List<PlayerWithState> players;
 
 	/**
 	 * Creates a new game (game room) and makes a first enrolment turn by a current player
@@ -34,7 +36,14 @@ public class PersistentGame implements Game, SynchronousGame {
 		this.id = String.format("%d-%d",
 				Instant.now().toEpochMilli(),
 				Double.valueOf(Math.random() * 999).intValue());
+		this.players = new ArrayList<>(maxPlayers);
 
+		PersistentPlayer player = new PersistentPlayer(hostPlayer);
+		PlayerWithState playerWithState = new PlayerWithState(player);
+		this.players.add(playerWithState);
+
+		GameState gameState = new WaitingForPlayers(maxPlayers);
+		turns.add(gameState);
 	}
 
 	@Override
@@ -85,8 +94,7 @@ public class PersistentGame implements Game, SynchronousGame {
 
 	@Override
 	public List<PlayerWithState> getPlayersInGame() {
-		// TODO: Implement
-		return null;
+		return this.players;
 	}
 
 	@Override

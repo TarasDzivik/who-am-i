@@ -61,7 +61,7 @@ class GameControllerTest {
 								.header("X-Player", "player")
 								.contentType(MediaType.APPLICATION_JSON)
 								.content("{\n" +
-										"    \"maxPlayers\": 2\n" +
+										"    \"maxPlayers\": 4\n" +
 										"}"))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("id").value("12613126"))

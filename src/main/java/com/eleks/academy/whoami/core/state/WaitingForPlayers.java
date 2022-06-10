@@ -35,4 +35,8 @@ public final class WaitingForPlayers extends AbstractGameState {
 		return this.players.size();
 	}
 
+	@Override
+	public String getStatus() {
+		return super.getStatus();
+	}
 }
