@@ -6,6 +6,7 @@ import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.state.GameFinished;
 import com.eleks.academy.whoami.core.state.GameState;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
+import com.eleks.academy.whoami.model.response.PlayerState;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 
 import java.time.Instant;
@@ -18,7 +19,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
-public class 	PersistentGame implements Game, SynchronousGame {
+public class PersistentGame implements Game, SynchronousGame {
 
 	private final Lock turnLock = new ReentrantLock();
 	private final String id;
@@ -39,7 +40,7 @@ public class 	PersistentGame implements Game, SynchronousGame {
 		this.players = new ArrayList<>(maxPlayers);
 
 		PersistentPlayer player = new PersistentPlayer(hostPlayer);
-		PlayerWithState playerWithState = new PlayerWithState(player);
+		PlayerWithState playerWithState = new PlayerWithState(player, PlayerState.READY);
 		this.players.add(playerWithState);
 
 		GameState gameState = new WaitingForPlayers(maxPlayers);

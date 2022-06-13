@@ -12,12 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
@@ -36,21 +34,22 @@ public class GameServiceImplTest {
 	}
 
 	@Test
-	void createGame() {
+	void createGameTest() {
 		final String player = "player";
 		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
 
 		when(gameRepository.save(any(SynchronousGame.class))).thenReturn(game);
 
 		var createdGame = gameService.createGame(player, gameRequest);
+		NewGameRequest gameRequest1 = new NewGameRequest();
+		gameRequest1.setMaxPlayers(4);
 
-		assertNotNull(createdGame);
+		assertThat(gameService.createGame(player, gameRequest))
+				.isEqualTo(gameService.createGame("player", gameRequest1));
 		assertNotNull(createdGame.getId());
 		assertNotNull(createdGame.getStatus());
-		assertNotNull(createdGame.getPlayers());
-		assertNull(createdGame.getCurrentTurn());
 
-		verify(gameRepository, times(1)).save(any(SynchronousGame.class));
+		verify(gameRepository, times(3)).save(any(SynchronousGame.class));
 	}
 
 }
