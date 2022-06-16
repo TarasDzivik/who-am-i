@@ -19,4 +19,8 @@ public class PlayerWithState {
 
 	private PlayerState state;
 
+	public PlayerWithState(SynchronousPlayer player, PlayerState state) {
+		this.player = player;
+	}
+
 }
