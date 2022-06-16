@@ -35,7 +35,7 @@ public class GameInMemoryRepositoryTest {
 
 		assertThat(gameRepository.save(game))
 				.isEqualTo(new PersistentGame(player, 4));
-		assertThat(gameRepository.save(game).getPlayersInGame().get(0))
-				.isEqualTo(new PersistentGame(player, 4).getPlayersInGame().get(0));
+		assertThat(gameRepository.save(game).getPlayersInGame())
+				.isEqualTo(new PersistentGame(player, 4).getPlayersInGame());
 	}
 }

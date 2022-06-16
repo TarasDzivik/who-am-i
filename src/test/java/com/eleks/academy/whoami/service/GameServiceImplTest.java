@@ -65,10 +65,7 @@ public class GameServiceImplTest {
 				.ignoringFields(idNaming)
 				.isEqualTo(expectedGame);
 
-		assertNotNull(game.getId());
 		assertEquals(game.getId(), gameDetails.getId());
-
-		assertNotNull(game.getStatus());
 		assertEquals(game.getStatus(), gameDetails.getStatus());
 
 		verify(gameRepository, times(1)).save(any(SynchronousGame.class));
