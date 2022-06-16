@@ -8,6 +8,7 @@ import com.eleks.academy.whoami.core.state.GameState;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.model.response.PlayerState;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
+import lombok.EqualsAndHashCode;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,13 +20,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PersistentGame implements Game, SynchronousGame {
 
 	private final Lock turnLock = new ReentrantLock();
 	private final String id;
 
 	private final Queue<GameState> turns = new LinkedBlockingQueue<>();
-	private final List<PlayerWithState> players;
+	@EqualsAndHashCode.Include private final List<PlayerWithState> players;
 
 	/**
 	 * Creates a new game (game room) and makes a first enrolment turn by a current player

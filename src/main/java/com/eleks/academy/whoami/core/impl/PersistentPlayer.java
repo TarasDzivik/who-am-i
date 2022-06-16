@@ -2,17 +2,18 @@ package com.eleks.academy.whoami.core.impl;
 
 import com.eleks.academy.whoami.core.Player;
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PersistentPlayer implements Player, SynchronousPlayer {
 
-	private final String name;
+	@EqualsAndHashCode.Include private final String name;
 	private final CompletableFuture<String> character = new CompletableFuture<>();
-
 
 	private Queue<String> questionQueue;
 	private volatile CompletableFuture<String> question;

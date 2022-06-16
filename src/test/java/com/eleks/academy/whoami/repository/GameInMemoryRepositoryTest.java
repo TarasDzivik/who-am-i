@@ -20,7 +20,6 @@ public class GameInMemoryRepositoryTest {
 
 	private final NewGameRequest gameRequest = new NewGameRequest();
 
-	@Mock
 	private final GameInMemoryRepository gameRepository = new GameInMemoryRepository();
 
 	@BeforeEach
@@ -29,13 +28,14 @@ public class GameInMemoryRepositoryTest {
 	}
 
 	@Test
-	void save() {
+	void saveTest() {
 		final String player = "player";
+
 		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
 
 		assertThat(gameRepository.save(game))
-				.isEqualTo(gameRepository.save(new PersistentGame("player", 4)));
-
-		verify(gameRepository, times(2)).save(any(SynchronousGame.class));
+				.isEqualTo(new PersistentGame(player, 4));
+		assertThat(gameRepository.save(game).getPlayersInGame().get(0))
+				.isEqualTo(new PersistentGame(player, 4).getPlayersInGame().get(0));
 	}
 }
