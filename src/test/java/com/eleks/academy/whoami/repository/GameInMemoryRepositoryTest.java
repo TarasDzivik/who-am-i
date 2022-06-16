@@ -7,13 +7,9 @@ import com.eleks.academy.whoami.repository.impl.GameInMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class GameInMemoryRepositoryTest {
@@ -35,7 +31,5 @@ public class GameInMemoryRepositoryTest {
 
 		assertThat(gameRepository.save(game))
 				.isEqualTo(new PersistentGame(player, 4));
-		assertThat(gameRepository.save(game).getPlayersInGame())
-				.isEqualTo(new PersistentGame(player, 4).getPlayersInGame());
 	}
 }
