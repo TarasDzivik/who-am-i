@@ -1,7 +1,6 @@
 package com.eleks.academy.whoami.core.impl;
 
 import com.eleks.academy.whoami.core.SynchronousPlayer;
-import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import lombok.EqualsAndHashCode;
 
 import java.util.Objects;

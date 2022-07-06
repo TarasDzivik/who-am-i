@@ -20,6 +20,7 @@ public interface SynchronousGame {
 	GameStatus getStatus();
 
 	boolean isAvailable();
+	boolean isAvailableToSuggestCharecter();
 
 	String getTurn();
 
