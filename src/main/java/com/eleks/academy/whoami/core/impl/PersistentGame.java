@@ -5,13 +5,13 @@ import com.eleks.academy.whoami.core.SynchronousGame;
 import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.state.GameFinished;
 import com.eleks.academy.whoami.core.state.GameState;
+import com.eleks.academy.whoami.core.state.SuggestingCharacters;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 import lombok.EqualsAndHashCode;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
@@ -101,6 +101,11 @@ public class PersistentGame implements Game, SynchronousGame {
 	@Override
 	public boolean isAvailable() {
 		return this.currentState.peek() instanceof WaitingForPlayers;
+	}
+
+	@Override
+	public boolean isAvailableToSuggestCharecter() {
+		return this.currentState.peek() instanceof SuggestingCharacters;
 	}
 
 	@Override
