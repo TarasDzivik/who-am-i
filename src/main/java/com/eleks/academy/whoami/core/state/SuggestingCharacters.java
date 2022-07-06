@@ -16,8 +16,6 @@ import static java.util.stream.Collectors.toList;
 
 public final class SuggestingCharacters extends AbstractGameState {
 
-//	private static final String SUGGESTING_CHARACTER = "SUGGESTING_CHARACTER";
-
 	private final Lock lock = new ReentrantLock();
 
 	private final Map<String, SynchronousPlayer> players;
@@ -30,6 +28,10 @@ public final class SuggestingCharacters extends AbstractGameState {
 		this.players = players;
 		this.suggestedCharacters = new HashMap<>(this.players.size());
 		this.playerCharacterMap = new HashMap<>(this.players.size());
+
+		for (SynchronousPlayer nextPlayer : this.players.values()) {
+			this.playerCharacterMap.put(nextPlayer.getName(), nextPlayer.getCharacter());
+		}
 	}
 
 	/**

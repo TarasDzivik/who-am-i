@@ -11,6 +11,7 @@ import com.eleks.academy.whoami.model.response.PlayerWithState;
 import lombok.EqualsAndHashCode;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
@@ -59,7 +60,7 @@ public class PersistentGame implements Game, SynchronousGame {
 	@Override
 	public SynchronousPlayer enrollToGame(String player) {
 		var checkState = currentState.peek().getStatus();
-		
+
 		if (checkState.equals(GameStatus.WAITING_FOR_PLAYERS)) {
 			GameState state = currentState.peek();
 
@@ -109,7 +110,6 @@ public class PersistentGame implements Game, SynchronousGame {
 
 	@Override
 	public List<PlayerWithState> getPlayersInGame() {
-//		return this.currentState.peek().getPlayersList().stream().map(PlayerWithState::of).toList();
 		return this.currentState.peek().getPlayers().values().stream().map(PlayerWithState::of).toList();
 	}
 

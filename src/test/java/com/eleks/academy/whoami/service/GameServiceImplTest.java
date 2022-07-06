@@ -1,15 +1,13 @@
 package com.eleks.academy.whoami.service;
 
 import com.eleks.academy.whoami.core.SynchronousGame;
+import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.core.impl.PersistentPlayer;
-import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.enums.GameStatus;
+import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
-import com.eleks.academy.whoami.model.response.GameDetails;
-import com.eleks.academy.whoami.model.response.GameLight;
-import com.eleks.academy.whoami.model.response.PlayerState;
-import com.eleks.academy.whoami.model.response.PlayerWithState;
+import com.eleks.academy.whoami.model.response.*;
 import com.eleks.academy.whoami.repository.GameRepository;
 import com.eleks.academy.whoami.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +16,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +28,7 @@ import static com.eleks.academy.whoami.enums.GameStatus.WAITING_FOR_PLAYERS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
@@ -47,7 +47,7 @@ public class GameServiceImplTest {
 	}
 
 	@Test
-	void findAvailableGamesTest () {
+	void findAvailableGamesTest() {
 		final String player = "player";
 
 		SynchronousGame synchronousGame = new PersistentGame(player, gameRequest.getMaxPlayers());
@@ -149,6 +149,45 @@ public class GameServiceImplTest {
 		var expectedPlayer = new PersistentPlayer(newPlayer);
 
 		assertEquals(enrolledPlayer, expectedPlayer);
+	}
+
+	@Test
+	void suggestCharacterWhenGameIsNotFoundTest() {
+		final String player = "Player1";
+		CharacterSuggestion suggestion = new CharacterSuggestion("Bet Monkey");
+
+		SynchronousGame game = new PersistentGame(player, 4);
+		game.enrollToGame("Player2");
+		game.enrollToGame("Player3");
+		game.enrollToGame("Player4");
+
+		when(gameRepository.findById(eq("id"))).thenReturn(Optional.of(game));
+
+		HttpClientErrorException responseStatusException = assertThrows(HttpClientErrorException.class, () ->
+				gameService.suggestCharacter("id", "new player", suggestion));
+
+		assertEquals("404 Game not found", responseStatusException.getMessage());
+	}
+
+	@Test
+	void suggestCharacterWhenPLayerIsNotFoundTest() {
+		final String player = "Player1";
+		final String bonusPlayer = "New Player";
+		CharacterSuggestion suggestion = new CharacterSuggestion("Bet Monkey");
+
+		SynchronousGame game = new PersistentGame(player, 4);
+		final String id = game.getId();
+		game.enrollToGame("Player2");
+		game.enrollToGame("Player3");
+
+
+		when(gameRepository.findById(id)).thenReturn(Optional.of(game));
+
+		HttpClientErrorException responseStatusException = assertThrows(HttpClientErrorException.class, () ->
+				gameService.suggestCharacter(id, bonusPlayer, suggestion));
+
+		assertEquals("404 Player not found", responseStatusException.getMessage());
+
 	}
 
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -14,7 +13,7 @@ import javax.validation.constraints.Size;
 public class CharacterSuggestion {
 
 	@NotNull
-	@Size(min = 1, max = 50, message = "character length must be between {min} and {max}!")
+	@Size(min = 2, max = 50, message = "Character length must be between {min} and {max}!")
 	private String character;
 
 }
