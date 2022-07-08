@@ -5,13 +5,13 @@ import com.eleks.academy.whoami.core.SynchronousGame;
 import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.state.GameFinished;
 import com.eleks.academy.whoami.core.state.GameState;
+import com.eleks.academy.whoami.core.state.SuggestingCharacters;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 import lombok.EqualsAndHashCode;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
@@ -19,6 +19,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
+
+import static java.lang.String.format;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PersistentGame implements Game, SynchronousGame {
@@ -35,7 +37,7 @@ public class PersistentGame implements Game, SynchronousGame {
 	 * @param hostPlayer player to initiate a new game
 	 */
 	public PersistentGame(String hostPlayer, Integer maxPlayers) {
-		this.id = String.format("%d-%d",
+		this.id = format("%d-%d",
 				Instant.now().toEpochMilli(),
 				Double.valueOf(Math.random() * 999).intValue());
 
@@ -95,12 +97,25 @@ public class PersistentGame implements Game, SynchronousGame {
 
 	@Override
 	public SynchronousGame start() {
-		return null;
+		var checkState = currentState.peek().getStatus();
+
+		if (checkState.equals(GameStatus.SUGGESTING_CHARACTERS)) {
+			currentState.add(currentState.peek().next());
+			currentState.remove();
+			return this;
+		} else {
+			throw new RuntimeException(format("Game %s has state %s", this.getId(), this.getStatus()));
+		}
 	}
 
 	@Override
 	public boolean isAvailable() {
 		return this.currentState.peek() instanceof WaitingForPlayers;
+	}
+
+	@Override
+	public boolean isAvailableToSuggestCharecter() {
+		return this.currentState.peek() instanceof SuggestingCharacters;
 	}
 
 	@Override

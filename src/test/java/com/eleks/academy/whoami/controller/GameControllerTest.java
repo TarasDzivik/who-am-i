@@ -24,6 +24,7 @@ import static com.eleks.academy.whoami.enums.GameStatus.WAITING_FOR_PLAYERS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -153,7 +154,7 @@ class GameControllerTest {
 		final String id = game.getId();
 
 		var player1 = new PersistentPlayer(newPlayer);
-		var expectedResponse = "{\"name\":\"newPlayer\",\"character\":null,\"question\":null,\"guess\":null}";
+		var expectedResponse = "{\"name\":\"newPlayer\",\"character\":null}";
 
 		when(gameService.enrollToGame(id, newPlayer)).thenReturn(player1);
 
@@ -165,6 +166,30 @@ class GameControllerTest {
 				.andExpect(content().json(expectedResponse));
 
 		verify(gameService, times(1)).enrollToGame(id, newPlayer);
+	}
+
+	@Test
+	void startGameTest() throws Exception {
+		final String id = "12345";
+		final String player = "player";
+
+		GameDetails gameDetails = new GameDetails();
+		gameDetails.setId(id);
+		Optional<GameDetails> op = Optional.of(gameDetails);
+
+		when(gameService.startGame(eq(id), eq(player))).thenReturn(op);
+
+		var expectedResponse = "{\"id\":\"12345\",\"status\":null,\"currentTurn\":null,\"players\":null}";
+
+		this.mockMvc.perform(
+						MockMvcRequestBuilders.post("/games/{id}", id)
+								.header("X-Player", player)
+								.contentType(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andExpect(content().json(expectedResponse));
+
+		verify(gameService, times(1)).startGame(id, player);
 	}
 
 }

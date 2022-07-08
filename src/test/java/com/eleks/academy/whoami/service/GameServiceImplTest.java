@@ -159,32 +159,32 @@ public class GameServiceImplTest {
 		SynchronousGame game = new PersistentGame(player, 4);
 		game.enrollToGame("Player2");
 		game.enrollToGame("Player3");
-		game.enrollToGame("Player4");
 
 		when(gameRepository.findById(eq("id"))).thenReturn(Optional.of(game));
 
 		HttpClientErrorException responseStatusException = assertThrows(HttpClientErrorException.class, () ->
-				gameService.suggestCharacter("id", "new player", suggestion));
+				gameService.suggestCharacter("id", "Player4", suggestion));
 
 		assertEquals("404 Game not found", responseStatusException.getMessage());
+
 	}
 
 	@Test
 	void suggestCharacterWhenPLayerIsNotFoundTest() {
 		final String player = "Player1";
-		final String bonusPlayer = "New Player";
 		CharacterSuggestion suggestion = new CharacterSuggestion("Bet Monkey");
 
 		SynchronousGame game = new PersistentGame(player, 4);
 		final String id = game.getId();
 		game.enrollToGame("Player2");
 		game.enrollToGame("Player3");
+		game.enrollToGame("Player4");
 
 
 		when(gameRepository.findById(id)).thenReturn(Optional.of(game));
 
 		HttpClientErrorException responseStatusException = assertThrows(HttpClientErrorException.class, () ->
-				gameService.suggestCharacter(id, bonusPlayer, suggestion));
+				gameService.suggestCharacter(id, "Player5", suggestion));
 
 		assertEquals("404 Player not found", responseStatusException.getMessage());
 

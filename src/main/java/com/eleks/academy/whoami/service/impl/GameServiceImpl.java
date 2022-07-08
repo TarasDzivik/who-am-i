@@ -60,7 +60,7 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public void suggestCharacter(String id, String player, CharacterSuggestion suggestion) {
 		this.gameRepository.findById(id)
-				.filter(SynchronousGame::isAvailable)
+				.filter(SynchronousGame::isAvailableToSuggestCharecter)
 				.map(game -> game.findPlayer(player))
 				.ifPresentOrElse(p -> p.ifPresentOrElse(suggest -> suggest.setCharacter(suggestion.getCharacter()),
 								() -> {
@@ -76,6 +76,7 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public Optional<GameDetails> startGame(String id, String player) {
 		return this.gameRepository.findById(id)
+				.filter(game -> game.findPlayer(player).isPresent())
 				.map(SynchronousGame::start)
 				.map(GameDetails::of);
 	}
