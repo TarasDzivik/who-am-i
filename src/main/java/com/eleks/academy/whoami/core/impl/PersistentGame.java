@@ -20,6 +20,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
+import static java.lang.String.format;
+
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PersistentGame implements Game, SynchronousGame {
 
@@ -35,7 +37,7 @@ public class PersistentGame implements Game, SynchronousGame {
 	 * @param hostPlayer player to initiate a new game
 	 */
 	public PersistentGame(String hostPlayer, Integer maxPlayers) {
-		this.id = String.format("%d-%d",
+		this.id = format("%d-%d",
 				Instant.now().toEpochMilli(),
 				Double.valueOf(Math.random() * 999).intValue());
 
@@ -95,7 +97,15 @@ public class PersistentGame implements Game, SynchronousGame {
 
 	@Override
 	public SynchronousGame start() {
-		return null;
+		var checkState = currentState.peek().getStatus();
+
+		if (checkState.equals(GameStatus.SUGGESTING_CHARACTERS)) {
+			currentState.add(currentState.peek().next());
+			currentState.remove();
+			return this;
+		} else {
+			throw new RuntimeException(format("Game %s has state %s", this.getId(), this.getStatus()));
+		}
 	}
 
 	@Override
