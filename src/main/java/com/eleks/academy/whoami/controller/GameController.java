@@ -18,6 +18,7 @@ import java.util.List;
 
 import static com.eleks.academy.whoami.utils.StringUtils.Headers.PLAYER;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/games")
 @RequiredArgsConstructor
