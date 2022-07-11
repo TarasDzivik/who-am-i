@@ -1,13 +1,15 @@
 package com.eleks.academy.whoami.service;
 
 import com.eleks.academy.whoami.core.SynchronousGame;
-import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.core.impl.PersistentPlayer;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
-import com.eleks.academy.whoami.model.response.*;
+import com.eleks.academy.whoami.model.response.GameDetails;
+import com.eleks.academy.whoami.model.response.GameLight;
+import com.eleks.academy.whoami.model.response.PlayerState;
+import com.eleks.academy.whoami.model.response.PlayerWithState;
 import com.eleks.academy.whoami.repository.GameRepository;
 import com.eleks.academy.whoami.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,10 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -154,7 +153,8 @@ public class GameServiceImplTest {
 	@Test
 	void suggestCharacterWhenGameIsNotFoundTest() {
 		final String player = "Player1";
-		CharacterSuggestion suggestion = new CharacterSuggestion("Bet Monkey");
+		CharacterSuggestion suggestion = new CharacterSuggestion();
+		suggestion.setCharacter("Bet Monkey");
 
 		SynchronousGame game = new PersistentGame(player, 4);
 		game.enrollToGame("Player2");
@@ -166,13 +166,13 @@ public class GameServiceImplTest {
 				gameService.suggestCharacter("id", "Player4", suggestion));
 
 		assertEquals("404 Game not found", responseStatusException.getMessage());
-
 	}
 
 	@Test
 	void suggestCharacterWhenPLayerIsNotFoundTest() {
 		final String player = "Player1";
-		CharacterSuggestion suggestion = new CharacterSuggestion("Bet Monkey");
+		CharacterSuggestion suggestion = new CharacterSuggestion();
+		suggestion.setCharacter("Bet Monkey");
 
 		SynchronousGame game = new PersistentGame(player, 4);
 		final String id = game.getId();
@@ -180,14 +180,51 @@ public class GameServiceImplTest {
 		game.enrollToGame("Player3");
 		game.enrollToGame("Player4");
 
-
 		when(gameRepository.findById(id)).thenReturn(Optional.of(game));
 
 		HttpClientErrorException responseStatusException = assertThrows(HttpClientErrorException.class, () ->
 				gameService.suggestCharacter(id, "Player5", suggestion));
 
 		assertEquals("404 Player not found", responseStatusException.getMessage());
+	}
 
+	@Test
+	void startGameTest() {
+		final String player = "player1";
+
+		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
+		final String id = game.getId();
+
+		Optional<SynchronousGame> op = Optional.of(game);
+
+		when(gameRepository.findById(eq(id))).thenReturn(op);
+
+		gameService.enrollToGame(id, "player2");
+		gameService.enrollToGame(id, "player3");
+		gameService.enrollToGame(id, "player4");
+
+		CharacterSuggestion suggestion1 = new CharacterSuggestion();
+		suggestion1.setCharacter("Character1");
+		suggestion1.setNickName("NickName1");
+		CharacterSuggestion suggestion2 = new CharacterSuggestion();
+		suggestion2.setCharacter("Character2");
+		suggestion2.setNickName("NickName2");
+		CharacterSuggestion suggestion3 = new CharacterSuggestion();
+		suggestion3.setCharacter("Character3");
+		suggestion3.setNickName("NickName3");
+		CharacterSuggestion suggestion4 = new CharacterSuggestion();
+		suggestion4.setCharacter("Character4");
+		suggestion4.setNickName("NickName4");
+
+		gameService.suggestCharacter(id, player, suggestion1);
+		gameService.suggestCharacter(id, "player2", suggestion2);
+		gameService.suggestCharacter(id, "player3", suggestion3);
+		gameService.suggestCharacter(id, "player4", suggestion4);
+
+		var startGame = gameService.startGame(id, player);
+		String expectedGame = startGame.get().toString();
+
+		assertEquals(startGame.get().toString(), expectedGame);
 	}
 
 }

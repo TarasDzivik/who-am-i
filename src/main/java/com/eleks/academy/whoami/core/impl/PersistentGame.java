@@ -27,6 +27,7 @@ public class PersistentGame implements Game, SynchronousGame {
 
 	private final Lock turnLock = new ReentrantLock();
 	private final String id;
+	private int number = 0;
 
 	private final Queue<GameState> currentState = new LinkedBlockingQueue<>();
 
@@ -46,7 +47,7 @@ public class PersistentGame implements Game, SynchronousGame {
 		GameState state = currentState.peek();
 
 		var newPlayer = new PersistentPlayer(hostPlayer);
-		((WaitingForPlayers)state).addPlayer(newPlayer);
+		((WaitingForPlayers) state).addPlayer(newPlayer);
 	}
 
 	@Override
@@ -67,7 +68,7 @@ public class PersistentGame implements Game, SynchronousGame {
 			GameState state = currentState.peek();
 
 			var newPlayer = new PersistentPlayer(player);
-			var addedPlayer = ((WaitingForPlayers)state).addPlayer(newPlayer);
+			var addedPlayer = ((WaitingForPlayers) state).addPlayer(newPlayer);
 
 			if (currentState.peek().getPlayersInGame() == 4) {
 				currentState.add(currentState.peek().next());

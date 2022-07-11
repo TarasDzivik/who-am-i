@@ -1,15 +1,16 @@
 package com.eleks.academy.whoami.core.impl;
 
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
 public class PersistentPlayer implements SynchronousPlayer {
 
-	@EqualsAndHashCode.Include private final String name;
-
+	private final String name;
+	private String nickName;
 	private String character;
 
 	public PersistentPlayer(String name) {
@@ -22,13 +23,19 @@ public class PersistentPlayer implements SynchronousPlayer {
 	}
 
 	@Override
+	public String getNickName() {
+		return this.nickName;
+	}
+
+	@Override
 	public String getCharacter() {
 		return character;
 	}
 
 	@Override
-	public String setCharacter(String character) {
-		return this.character = character;
+	public void suggestCharacter(CharacterSuggestion suggestion) {
+		this.nickName = suggestion.getNickName();
+		this.character = suggestion.getCharacter();
 	}
 
 }
