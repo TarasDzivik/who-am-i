@@ -94,7 +94,8 @@ class GameControllerTest {
 								.header("X-Player", "player")
 								.contentType(MediaType.APPLICATION_JSON)
 								.content("{\n" +
-										"    \"character\": \" char\"\n" +
+										"    \"character\": \" char\",\n" +
+										"\"nickName\": \"nick\"" +
 										"}"))
 				.andExpect(status().isOk());
 		verify(gameService, times(1)).suggestCharacter(eq("1234"), eq("player"), any(CharacterSuggestion.class));

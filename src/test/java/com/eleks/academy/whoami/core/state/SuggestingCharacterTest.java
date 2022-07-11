@@ -2,12 +2,13 @@ package com.eleks.academy.whoami.core.state;
 
 import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.impl.PersistentPlayer;
+import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SuggestingCharacterTest {
 
@@ -24,14 +25,39 @@ public class SuggestingCharacterTest {
 			SynchronousPlayer player7 = new PersistentPlayer("Player3");
 			SynchronousPlayer player8 = new PersistentPlayer("Player4");
 
-			player1.setCharacter("Character1");
-			player2.setCharacter("Character2");
-			player3.setCharacter("Character3");
-			player4.setCharacter("Character4");
-			player5.setCharacter("Character1");
-			player6.setCharacter("Character2");
-			player7.setCharacter("Character3");
-			player8.setCharacter("Character4");
+			CharacterSuggestion suggestion1 = new CharacterSuggestion();
+			suggestion1.setCharacter("Character1");
+			suggestion1.setNickName("NickName1");
+			CharacterSuggestion suggestion2 = new CharacterSuggestion();
+			suggestion2.setCharacter("Character2");
+			suggestion2.setNickName("NickName2");
+			CharacterSuggestion suggestion3 = new CharacterSuggestion();
+			suggestion3.setCharacter("Character3");
+			suggestion3.setNickName("NickName3");
+			CharacterSuggestion suggestion4 = new CharacterSuggestion();
+			suggestion4.setCharacter("Character4");
+			suggestion4.setNickName("NickName4");
+			CharacterSuggestion suggestion5 = new CharacterSuggestion();
+			suggestion5.setCharacter("Character5");
+			suggestion5.setNickName("NickName5");
+			CharacterSuggestion suggestion6 = new CharacterSuggestion();
+			suggestion6.setCharacter("Character6");
+			suggestion6.setNickName("NickName6");
+			CharacterSuggestion suggestion7 = new CharacterSuggestion();
+			suggestion7.setCharacter("Character7");
+			suggestion7.setNickName("NickName7");
+			CharacterSuggestion suggestion8 = new CharacterSuggestion();
+			suggestion8.setCharacter("Character8");
+			suggestion8.setNickName("NickName8");
+
+			player1.suggestCharacter(suggestion1);
+			player2.suggestCharacter(suggestion2);
+			player3.suggestCharacter(suggestion3);
+			player4.suggestCharacter(suggestion4);
+			player5.suggestCharacter(suggestion5);
+			player6.suggestCharacter(suggestion6);
+			player7.suggestCharacter(suggestion7);
+			player8.suggestCharacter(suggestion8);
 
 			players.put("Player1", player1);
 			players.put("Player2", player2);
@@ -53,7 +79,11 @@ public class SuggestingCharacterTest {
 				String val1 = entry.getValue().getCharacter();
 				String val2 = result.get(key).getCharacter();
 
+				String expectedNickName = players.get(entry.getKey()).getNickName();
+				String resultNickName = result.get(entry.getKey()).getNickName();
+
 				assertNotEquals(val1, val2);
+				assertEquals(expectedNickName, resultNickName);
 			}
 		}
 	}
@@ -71,14 +101,39 @@ public class SuggestingCharacterTest {
 			SynchronousPlayer player7 = new PersistentPlayer("Player3");
 			SynchronousPlayer player8 = new PersistentPlayer("Player4");
 
-			player1.setCharacter("Character1");
-			player2.setCharacter("Character1");
-			player3.setCharacter("Character1");
-			player4.setCharacter("Character4");
-			player5.setCharacter("Character1");
-			player6.setCharacter("Character1");
-			player7.setCharacter("Character1");
-			player8.setCharacter("Character4");
+			CharacterSuggestion suggestion1 = new CharacterSuggestion();
+			suggestion1.setCharacter("Character1");
+			suggestion1.setNickName("NickName1");
+			CharacterSuggestion suggestion2 = new CharacterSuggestion();
+			suggestion2.setCharacter("Character2");
+			suggestion2.setNickName("NickName2");
+			CharacterSuggestion suggestion3 = new CharacterSuggestion();
+			suggestion3.setCharacter("Character3");
+			suggestion3.setNickName("NickName3");
+			CharacterSuggestion suggestion4 = new CharacterSuggestion();
+			suggestion4.setCharacter("Character4");
+			suggestion4.setNickName("NickName4");
+			CharacterSuggestion suggestion5 = new CharacterSuggestion();
+			suggestion5.setCharacter("Character5");
+			suggestion5.setNickName("NickName5");
+			CharacterSuggestion suggestion6 = new CharacterSuggestion();
+			suggestion6.setCharacter("Character6");
+			suggestion6.setNickName("NickName6");
+			CharacterSuggestion suggestion7 = new CharacterSuggestion();
+			suggestion7.setCharacter("Character7");
+			suggestion7.setNickName("NickName7");
+			CharacterSuggestion suggestion8 = new CharacterSuggestion();
+			suggestion8.setCharacter("Character8");
+			suggestion8.setNickName("NickName8");
+
+			player1.suggestCharacter(suggestion1);
+			player2.suggestCharacter(suggestion2);
+			player3.suggestCharacter(suggestion3);
+			player4.suggestCharacter(suggestion4);
+			player5.suggestCharacter(suggestion5);
+			player6.suggestCharacter(suggestion6);
+			player7.suggestCharacter(suggestion7);
+			player8.suggestCharacter(suggestion8);
 
 			players.put("Player1", player1);
 			players.put("Player2", player2);
