@@ -6,23 +6,16 @@ import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class SuggestingCharacters extends AbstractGameState {
 
-	private final Lock lock = new ReentrantLock();
 	static final int FAILED_ATTEMPTS_SHUFFLED = 5;
 
-	private final Map<String, SynchronousPlayer> players;
-
 	public SuggestingCharacters(Map<String, SynchronousPlayer> players) {
-		super(players.size(), players.size());
-
-		this.players = players;
+		super(players.size(), players.size(), players);
 	}
 
 	/**
@@ -41,11 +34,6 @@ public final class SuggestingCharacters extends AbstractGameState {
 	}
 
 	@Override
-	public Optional<SynchronousPlayer> findPlayer(String player) {
-		return Optional.ofNullable(this.players.get(player));
-	}
-
-	@Override
 	public GameStatus getStatus() {
 		return GameStatus.SUGGESTING_CHARACTERS;
 	}
@@ -55,11 +43,6 @@ public final class SuggestingCharacters extends AbstractGameState {
 				.map(SynchronousPlayer::getCharacter)
 				.filter(Objects::nonNull)
 				.toList().size() == this.getMaxPlayers();
-	}
-
-	@Override
-	public Map<String, SynchronousPlayer> getPlayers() {
-		return this.players;
 	}
 
 	Map<String, SynchronousPlayer> assignCharacters() {

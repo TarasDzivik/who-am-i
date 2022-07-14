@@ -3,6 +3,7 @@ package com.eleks.academy.whoami.service.impl;
 import com.eleks.academy.whoami.core.SynchronousGame;
 import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
+import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
 import com.eleks.academy.whoami.model.response.GameDetails;
@@ -60,7 +61,7 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public void suggestCharacter(String id, String player, CharacterSuggestion suggestion) {
 		this.gameRepository.findById(id)
-				.filter(SynchronousGame::isAvailableToSuggestCharecter)
+				.filter(SynchronousGame::isAvailableToSuggestCharacter)
 				.map(game -> game.findPlayer(player))
 				.ifPresentOrElse(p -> p.ifPresentOrElse(suggest -> suggest.suggestCharacter(suggestion),
 								() -> {
@@ -100,6 +101,18 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public void answerQuestion(String id, String player, String answer) {
 
+	}
+
+	@Override
+	public void leaveGame(String id, String player) {
+		var game = gameRepository.findById(id).orElseThrow(
+				() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Game not found"));
+
+		if (game.getStatus().equals(GameStatus.WAITING_FOR_PLAYERS)) {
+			game.leaveGame(player);
+		} else {
+			this.gameRepository.deleteById(id);
+		}
 	}
 
 }

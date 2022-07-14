@@ -13,4 +13,6 @@ public interface GameRepository {
 
 	Optional<SynchronousGame> findById(String id);
 
+	void deleteById(String id);
+
 }

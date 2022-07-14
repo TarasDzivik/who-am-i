@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 import static java.lang.String.format;
@@ -25,9 +23,7 @@ import static java.lang.String.format;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PersistentGame implements Game, SynchronousGame {
 
-	private final Lock turnLock = new ReentrantLock();
 	private final String id;
-	private int number = 0;
 
 	private final Queue<GameState> currentState = new LinkedBlockingQueue<>();
 
@@ -70,14 +66,14 @@ public class PersistentGame implements Game, SynchronousGame {
 			var newPlayer = new PersistentPlayer(player);
 			var addedPlayer = ((WaitingForPlayers) state).addPlayer(newPlayer);
 
-			if (currentState.peek().getPlayersInGame() == 4) {
+			if (currentState.peek().getPlayersInGame() == state.getMaxPlayers()) {
 				currentState.add(currentState.peek().next());
 				currentState.remove();
 				return addedPlayer;
 			}
 			return addedPlayer;
 		} else {
-			throw new RuntimeException("Game [" + this.getId() + "] has state [" + this.getStatus() + "]");
+			throw new RuntimeException(format("Game %s has state %s", this.getId(), this.getStatus()));
 		}
 	}
 
@@ -115,7 +111,7 @@ public class PersistentGame implements Game, SynchronousGame {
 	}
 
 	@Override
-	public boolean isAvailableToSuggestCharecter() {
+	public boolean isAvailableToSuggestCharacter() {
 		return this.currentState.peek() instanceof SuggestingCharacters;
 	}
 
@@ -155,6 +151,11 @@ public class PersistentGame implements Game, SynchronousGame {
 		while (!(this.currentState.peek() instanceof GameFinished)) {
 			this.makeTurn();
 		}
+	}
+
+	@Override
+	public void leaveGame(String player) {
+		this.currentState.peek().leavePlayer(player);
 	}
 
 	private <T, R> R applyIfPresent(T source, Function<T, R> mapper) {
