@@ -41,4 +41,9 @@ public class GameInMemoryRepository implements GameRepository {
 		return Optional.ofNullable(this.games.get(id));
 	}
 
+	@Override
+	public void deleteById(String id) {
+		this.games.remove(id);
+	}
+
 }
