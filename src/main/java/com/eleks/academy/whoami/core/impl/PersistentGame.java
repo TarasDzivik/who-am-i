@@ -8,6 +8,7 @@ import com.eleks.academy.whoami.core.state.GameState;
 import com.eleks.academy.whoami.core.state.SuggestingCharacters;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.enums.GameStatus;
+import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 import lombok.EqualsAndHashCode;
 
@@ -27,12 +28,6 @@ public class PersistentGame implements Game, SynchronousGame {
 
 	private final Queue<GameState> currentState = new LinkedBlockingQueue<>();
 
-	/**
-	 * Creates a new game (game room) and makes a first enrolment turn by a current player
-	 * so that he won't have to enroll to the game he created
-	 *
-	 * @param hostPlayer player to initiate a new game
-	 */
 	public PersistentGame(String hostPlayer, Integer maxPlayers) {
 		this.id = format("%d-%d",
 				Instant.now().toEpochMilli(),
@@ -78,6 +73,16 @@ public class PersistentGame implements Game, SynchronousGame {
 	}
 
 	@Override
+	public void setCharacters(String player, CharacterSuggestion characters) {
+		SuggestingCharacters suggesting = (SuggestingCharacters) currentState.peek();
+		suggesting.setCharacters(player, characters);
+		if (suggesting.finished()) {
+			currentState.add(suggesting.next());
+			currentState.remove();
+		}
+	}
+
+	@Override
 	public String getTurn() {
 		return this.applyIfPresent(this.currentState.peek(), GameState::getCurrentTurn);
 	}
@@ -96,7 +101,7 @@ public class PersistentGame implements Game, SynchronousGame {
 	public SynchronousGame start() {
 		var checkState = currentState.peek().getStatus();
 
-		if (checkState.equals(GameStatus.SUGGESTING_CHARACTERS)) {
+		if (checkState.equals(GameStatus.STARTS)) {
 			currentState.add(currentState.peek().next());
 			currentState.remove();
 			return this;
