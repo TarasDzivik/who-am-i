@@ -14,7 +14,6 @@ import com.eleks.academy.whoami.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -25,7 +24,7 @@ import java.util.Optional;
 public class GameServiceImpl implements GameService {
 
 	public static final String PLAYER_NOT_FOUND = "Player not found";
-	public static final String GAME_NOT_FOUND = "Game not found";
+	public static final String GAME_NOT_FOUND = "Game not found or not available.";
 	private final GameRepository gameRepository;
 
 	@Override
@@ -64,8 +63,8 @@ public class GameServiceImpl implements GameService {
 	public void suggestCharacter(String id, String player, CharacterSuggestion suggestion) {
 		SynchronousGame game = this.gameRepository.findById(id)
 				.filter(g -> g.getStatus().equals(GameStatus.SUGGESTING_CHARACTERS))
-				.orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));
-		game.findPlayer(player).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, PLAYER_NOT_FOUND));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));
+		game.findPlayer(player).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PLAYER_NOT_FOUND));
 		game.setCharacters(player, suggestion);
 	}
 
@@ -73,8 +72,8 @@ public class GameServiceImpl implements GameService {
 	public GameDetails startGame(String id, String player) {
 		SynchronousGame game = this.gameRepository.findById(id)
 				.filter(g -> g.getStatus().equals(GameStatus.STARTS))
-				.orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));
-		game.findPlayer(player).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, PLAYER_NOT_FOUND));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));
+		game.findPlayer(player).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PLAYER_NOT_FOUND));
 		return GameDetails.of(game.start());
 	}
 
@@ -102,7 +101,7 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public void leaveGame(String id, String player) {
 		var game = gameRepository.findById(id).orElseThrow(
-				() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Game not found"));
+				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));
 
 		if (game.getStatus().equals(GameStatus.WAITING_FOR_PLAYERS) || game.getStatus().equals(GameStatus.IN_PROGRESS)) {
 			game.leaveGame(player);

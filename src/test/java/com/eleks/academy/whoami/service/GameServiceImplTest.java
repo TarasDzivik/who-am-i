@@ -18,7 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,10 +159,10 @@ public class GameServiceImplTest {
 
 		when(gameRepository.findById(eq("id"))).thenReturn(Optional.of(game));
 
-		HttpClientErrorException responseStatusException = assertThrows(HttpClientErrorException.class, () ->
+		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
 				gameService.suggestCharacter("id", "Player4", suggestion));
 
-		assertEquals("404 Game not found", responseStatusException.getMessage());
+		assertEquals("404 NOT_FOUND \"Game not found or not available.\"", responseStatusException.getMessage());
 	}
 
 	@Test
@@ -179,10 +179,10 @@ public class GameServiceImplTest {
 
 		when(gameRepository.findById(id)).thenReturn(Optional.of(game));
 
-		HttpClientErrorException responseStatusException = assertThrows(HttpClientErrorException.class, () ->
+		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
 				gameService.suggestCharacter(id, "Player5", suggestion));
 
-		assertEquals("404 Player not found", responseStatusException.getMessage());
+		assertEquals("404 NOT_FOUND \"Player not found\"", responseStatusException.getMessage());
 	}
 
 	@Test
@@ -290,10 +290,10 @@ public class GameServiceImplTest {
 		gameService.enrollToGame(id, "player3");
 		gameService.enrollToGame(id, "player4");
 
-		HttpClientErrorException responseStatusException = assertThrows(HttpClientErrorException.class, () ->
+		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
 				gameService.leaveGame("1", player));
 
-		assertEquals("404 Game not found", responseStatusException.getMessage());
+		assertEquals("404 NOT_FOUND \"Game not found or not available.\"", responseStatusException.getMessage());
 	}
 
 }
