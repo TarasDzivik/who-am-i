@@ -16,6 +16,7 @@ import com.eleks.academy.whoami.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class GameServiceImpl implements GameService {
 	public static final String PLAYER_NOT_FOUND = "Player not found";
 	public static final String GAME_NOT_FOUND = "Game not found or not available.";
 	public static final String CANNOT_ENROLL_TO_A_GAME = "Cannot enroll to a game";
+
 	private final GameRepository gameRepository;
 
 	@Override
