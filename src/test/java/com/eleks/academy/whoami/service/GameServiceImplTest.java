@@ -405,7 +405,6 @@ public class GameServiceImplTest {
 				gameService.leaveGame("1", player));
 
 		assertEquals("404 NOT_FOUND \"Game not found or not available.\"", responseStatusException.getMessage());
-		assertEquals("404 NOT_FOUND \"Game not found or not available.\"", responseStatusException.getMessage());
 	}
 
 	@Test
