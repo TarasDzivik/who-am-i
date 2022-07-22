@@ -25,6 +25,7 @@ public class GameServiceImpl implements GameService {
 
 	public static final String PLAYER_NOT_FOUND = "Player not found";
 	public static final String GAME_NOT_FOUND = "Game not found or not available.";
+	public static final String CANNOT_ENROLL_TO_A_GAME = "Cannot enroll to a game";
 	private final GameRepository gameRepository;
 
 	@Override
@@ -48,7 +49,7 @@ public class GameServiceImpl implements GameService {
 				.filter(SynchronousGame::isAvailable)
 				.map(game -> game.enrollToGame(player))
 				.orElseThrow(
-						() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot enroll to a game")
+						() -> new ResponseStatusException(HttpStatus.FORBIDDEN, CANNOT_ENROLL_TO_A_GAME)
 				);
 	}
 
@@ -64,7 +65,8 @@ public class GameServiceImpl implements GameService {
 		SynchronousGame game = this.gameRepository.findById(id)
 				.filter(g -> g.getStatus().equals(GameStatus.SUGGESTING_CHARACTERS))
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));
-		game.findPlayer(player).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PLAYER_NOT_FOUND));
+		game.findPlayer(player)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PLAYER_NOT_FOUND));
 		game.setCharacters(player, suggestion);
 	}
 
@@ -78,9 +80,12 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public void askQuestion(String gameId, String player, String message) {
-		this.gameRepository.findById(gameId)
-				.ifPresent(game -> game.askQuestion(player, message));
+	public void askQuestion(String id, String player, String question) {
+		SynchronousGame game = this.gameRepository.findById(id)
+				.filter(g -> g.getStatus() == GameStatus.IN_PROGRESS)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));
+		game.findPlayer(player).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PLAYER_NOT_FOUND));
+		game.askQuestion(player, question);
 	}
 
 	@Override
@@ -102,12 +107,17 @@ public class GameServiceImpl implements GameService {
 	public void leaveGame(String id, String player) {
 		var game = gameRepository.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));
+		game.findPlayer(player).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PLAYER_NOT_FOUND));
 
-		if (game.getStatus().equals(GameStatus.WAITING_FOR_PLAYERS) || game.getStatus().equals(GameStatus.IN_PROGRESS)) {
+		if (game.getStatus().equals(GameStatus.WAITING_FOR_PLAYERS) ||
+				game.getStatus().equals(GameStatus.IN_PROGRESS)) {
 			game.leaveGame(player);
-		} else {
+		} else if (game.getStatus().equals(GameStatus.SUGGESTING_CHARACTERS) ||
+				game.getStatus().equals(GameStatus.STARTS) ||
+				game.getStatus().equals(GameStatus.FINISHED)){
 			this.gameRepository.deleteById(id);
 		}
+
 	}
 
 }

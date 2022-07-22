@@ -6,6 +6,7 @@ import com.eleks.academy.whoami.core.impl.PersistentPlayer;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.enums.PlayerState;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
+import com.eleks.academy.whoami.model.request.Message;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
 import com.eleks.academy.whoami.model.response.GameDetails;
 import com.eleks.academy.whoami.model.response.GameLight;
@@ -181,8 +182,29 @@ public class GameServiceImplTest {
 
 		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
 				gameService.suggestCharacter(id, "Player5", suggestion));
-
 		assertEquals("404 NOT_FOUND \"Player not found\"", responseStatusException.getMessage());
+	}
+
+	@Test
+	void suggestCharacterTest(){
+		final String player = "Player1";
+		CharacterSuggestion suggestion = new CharacterSuggestion();
+		suggestion.setNickName("Taras");
+		suggestion.setCharacter("Bet Monkey");
+
+		SynchronousGame game = new PersistentGame(player, 4);
+		final String id = game.getId();
+
+		game.findPlayer(player).ifPresent(s->s.suggestCharacter(suggestion));
+
+		var persistentPlayer = game.findPlayer(player).get();
+
+		var character = persistentPlayer.getCharacter();
+		var nickName = persistentPlayer.getNickName();
+
+		assertEquals(character, "Bet Monkey");
+		assertEquals(nickName, "Taras");
+
 	}
 
 	@Test
@@ -294,6 +316,71 @@ public class GameServiceImplTest {
 				gameService.leaveGame("1", player));
 
 		assertEquals("404 NOT_FOUND \"Game not found or not available.\"", responseStatusException.getMessage());
+	}
+
+	@Test
+	void askQuestionWhenPlayerIsNotFoundTest() {
+		final String player = "Player1";
+		Message message = new Message("some question");
+		var question = message.getMessage();
+
+		SynchronousGame game = new PersistentGame(player, 4);
+		final String id = game.getId();
+		game.enrollToGame("Player2");
+		game.enrollToGame("Player3");
+		game.enrollToGame("Player4");
+
+		Optional<SynchronousGame> optionalSynchronousGame = Optional.of(game);
+		when(gameRepository.findById(id)).thenReturn(optionalSynchronousGame);
+
+		CharacterSuggestion suggestion1 = new CharacterSuggestion();
+		suggestion1.setCharacter("Character1");
+		suggestion1.setNickName("NickName1");
+		CharacterSuggestion suggestion2 = new CharacterSuggestion();
+		suggestion2.setCharacter("Character2");
+		suggestion2.setNickName("NickName2");
+		CharacterSuggestion suggestion3 = new CharacterSuggestion();
+		suggestion3.setCharacter("Character3");
+		suggestion3.setNickName("NickName3");
+		CharacterSuggestion suggestion4 = new CharacterSuggestion();
+		suggestion4.setCharacter("Character4");
+		suggestion4.setNickName("NickName4");
+
+		gameService.suggestCharacter(id, player, suggestion1);
+		gameService.suggestCharacter(id, "Player2", suggestion2);
+		gameService.suggestCharacter(id, "Player3", suggestion3);
+		gameService.suggestCharacter(id, "Player4", suggestion4);
+
+		var startGame = gameService.startGame(id, player);
+		List<PlayerWithState> listPlayerWithState = new ArrayList<>();
+		listPlayerWithState.add(new PlayerWithState(game.findPlayer(player).get()));
+		listPlayerWithState.add(new PlayerWithState(game.findPlayer("Player2").get()));
+		listPlayerWithState.add(new PlayerWithState(game.findPlayer("Player3").get()));
+		listPlayerWithState.add(new PlayerWithState(game.findPlayer("Player4").get()));
+
+		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
+				gameService.askQuestion(id, "Player5", question));
+		assertEquals("404 NOT_FOUND \"Player not found\"", responseStatusException.getMessage());
+
+	}
+	@Test
+	void askQuestionWhenGameIsNotFoundTest() {
+		final String player = "Player1";
+		Message message = new Message("some question");
+		var question = message.getMessage();
+
+		SynchronousGame game = new PersistentGame(player, 4);
+		final String id = game.getId();
+		game.enrollToGame("Player2");
+		game.enrollToGame("Player3");
+
+		Optional<SynchronousGame> optionalSynchronousGame = Optional.of(game);
+		when(gameRepository.findById("id")).thenReturn(optionalSynchronousGame);
+
+		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
+				gameService.askQuestion("id", "Player4", question));
+		assertEquals("404 NOT_FOUND \"Game not found or not available.\"", responseStatusException.getMessage());
+
 	}
 
 }
