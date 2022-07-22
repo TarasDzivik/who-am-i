@@ -1,6 +1,7 @@
 package com.eleks.academy.whoami.service;
 
 import com.eleks.academy.whoami.core.SynchronousGame;
+import com.eleks.academy.whoami.core.action.PlayerAction;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.core.impl.PersistentPlayer;
 import com.eleks.academy.whoami.enums.GameStatus;
@@ -229,11 +230,14 @@ public class GameServiceImplTest {
 		var expectedGame = GameDetails.builder()
 				.id(id)
 				.status(GameStatus.IN_PROGRESS)
-				.currentTurn("player1")
+				.currentTurn(List.of(new PlayerAction("player1", PlayerAction.Action.QUESTION, null),
+						new PlayerAction("player2", PlayerAction.Action.ANSWER, null),
+						new PlayerAction("player3", PlayerAction.Action.ANSWER, null),
+						new PlayerAction("player4", PlayerAction.Action.ANSWER, null)))
 				.players(listPlayerWithState)
 				.build();
 
-		assertEquals(startGame, expectedGame);
+		assertThat(startGame).isEqualTo(expectedGame);
 	}
 
 	@Test
