@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class ProcessingQuestion extends AbstractGameState {
+
 	private Turn turn;
 
 	public ProcessingQuestion(Map<String, SynchronousPlayer> players) {
@@ -39,13 +40,15 @@ public final class ProcessingQuestion extends AbstractGameState {
 		throw new GameException("Not implemented");
 	}
 
-	;
-
-	public void answer(String player, PlayerAction answer) {
-		throw new GameException("Not implemented");
+	public void answer(String player, String value) {
+		if (!turn.isQuestionPresent()) throw new GameException("No question for answer");
+		if (!turn.isAnswerer(player)) throw new GameException("You can't answer");
+		turn.action(player, value);
+		if (turn.hasTurnEnded()) {
+			turn.makeTurn(players.values().stream().toList(), turn.calculateAnswers());
+			updatePlayersState(this.getCurrentTurn(), players);
+		}
 	}
-
-	;
 
 	private void updatePlayersState(List<PlayerAction> playerActions, Map<String, SynchronousPlayer> players) {
 		String askingPlayer = playerActions

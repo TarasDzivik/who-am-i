@@ -12,6 +12,14 @@ public interface Turn {
 
 	List<List<PlayerAction>> getTurns();
 
-	void action(String player, PlayerAction action, String question);
+	boolean isQuestionPresent();
+
+	boolean isAnswerer(String player);
+
+	boolean hasTurnEnded();
+
+	boolean calculateAnswers();
+
+	void action(String player, String value);
 
 }
