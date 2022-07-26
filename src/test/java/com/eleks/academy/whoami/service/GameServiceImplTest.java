@@ -409,49 +409,19 @@ public class GameServiceImplTest {
 
 	@Test
 	void askQuestionWhenPlayerIsNotFoundTest() {
-		final String player = "Player1";
-		Message message = new Message("some question");
-		var question = message.getMessage();
+		SynchronousGame mockedGame = mock(SynchronousGame.class);
+		final String id = mockedGame.getId();
 
-		SynchronousGame game = new PersistentGame(player, 4);
-		final String id = game.getId();
-		game.enrollToGame("Player2");
-		game.enrollToGame("Player3");
-		game.enrollToGame("Player4");
-
-		Optional<SynchronousGame> optionalSynchronousGame = Optional.of(game);
-		when(gameRepository.findById(id)).thenReturn(optionalSynchronousGame);
-
-		CharacterSuggestion suggestion1 = new CharacterSuggestion();
-		suggestion1.setCharacter("Character1");
-		suggestion1.setNickName("NickName1");
-		CharacterSuggestion suggestion2 = new CharacterSuggestion();
-		suggestion2.setCharacter("Character2");
-		suggestion2.setNickName("NickName2");
-		CharacterSuggestion suggestion3 = new CharacterSuggestion();
-		suggestion3.setCharacter("Character3");
-		suggestion3.setNickName("NickName3");
-		CharacterSuggestion suggestion4 = new CharacterSuggestion();
-		suggestion4.setCharacter("Character4");
-		suggestion4.setNickName("NickName4");
-
-		gameService.suggestCharacter(id, player, suggestion1);
-		gameService.suggestCharacter(id, "Player2", suggestion2);
-		gameService.suggestCharacter(id, "Player3", suggestion3);
-		gameService.suggestCharacter(id, "Player4", suggestion4);
-
-		var startGame = gameService.startGame(id, player);
-		List<PlayerWithState> listPlayerWithState = new ArrayList<>();
-		listPlayerWithState.add(new PlayerWithState(game.findPlayer(player).get()));
-		listPlayerWithState.add(new PlayerWithState(game.findPlayer("Player2").get()));
-		listPlayerWithState.add(new PlayerWithState(game.findPlayer("Player3").get()));
-		listPlayerWithState.add(new PlayerWithState(game.findPlayer("Player4").get()));
+		when(gameRepository.findById(id)).thenReturn(Optional.of(mockedGame));
+		when(mockedGame.getStatus()).thenReturn(GameStatus.IN_PROGRESS);
+		when(mockedGame.findPlayer(eq("Player5"))).thenReturn(Optional.empty());
 
 		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
-				gameService.askQuestion(id, "Player5", question));
+				gameService.askQuestion(id, "Player5", "some question"));
 		assertEquals("404 NOT_FOUND \"Player not found\"", responseStatusException.getMessage());
 
 	}
+
 	@Test
 	void askQuestionWhenGameIsNotFoundTest() {
 		final String player = "Player1";
