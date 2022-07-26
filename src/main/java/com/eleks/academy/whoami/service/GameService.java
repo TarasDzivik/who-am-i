@@ -1,6 +1,7 @@
 package com.eleks.academy.whoami.service;
 
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import com.eleks.academy.whoami.core.action.PlayerAction;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
 import com.eleks.academy.whoami.model.response.GameDetails;
@@ -31,6 +32,8 @@ public interface GameService {
 	void submitGuess(String id, String player, String guess);
 
 	void answerQuestion(String id, String player, String answer);
+
+	List<List<PlayerAction>> history(String id, String player);
 
 	void leaveGame(String id, String player);
 }

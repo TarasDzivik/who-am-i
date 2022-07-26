@@ -1,6 +1,7 @@
 package com.eleks.academy.whoami.controller;
 
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import com.eleks.academy.whoami.core.action.PlayerAction;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.Message;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
@@ -92,6 +93,12 @@ public class GameController {
 							   @RequestHeader(PLAYER) String player,
 							   @RequestBody Message message) {
 		this.gameService.answerQuestion(id, player, message.getMessage());
+	}
+
+	@GetMapping("/{id}/history")
+	public List<List<PlayerAction>> history(@PathVariable("id") String id,
+											@RequestHeader(PLAYER) String player) {
+		return this.gameService.history(id, player);
 	}
 
 	@PostMapping("/{id}/leave")
