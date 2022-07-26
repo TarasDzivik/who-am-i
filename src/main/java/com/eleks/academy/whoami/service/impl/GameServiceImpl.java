@@ -2,6 +2,7 @@ package com.eleks.academy.whoami.service.impl;
 
 import com.eleks.academy.whoami.core.SynchronousGame;
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import com.eleks.academy.whoami.core.action.PlayerAction;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.enums.VotingOptions;
@@ -106,6 +107,15 @@ public class GameServiceImpl implements GameService {
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));
 		game.findPlayer(player).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PLAYER_NOT_FOUND));
 		game.answerQuestion(player, VotingOptions.valueOf(answer.toUpperCase()));
+	}
+
+	@Override
+	public List<List<PlayerAction>> history(String id, String player) {
+		SynchronousGame game = gameRepository.findById(id)
+				.filter(g -> g.getStatus().equals(GameStatus.IN_PROGRESS))
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));
+		game.findPlayer(player).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, PLAYER_NOT_FOUND));
+		return game.history();
 	}
 
 	@Override
