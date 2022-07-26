@@ -1,10 +1,12 @@
 package com.eleks.academy.whoami.service;
 
 import com.eleks.academy.whoami.core.SynchronousGame;
+import com.eleks.academy.whoami.core.action.PlayerAction;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.core.impl.PersistentPlayer;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.enums.PlayerState;
+import com.eleks.academy.whoami.enums.VotingOptions;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.Message;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -251,11 +254,54 @@ public class GameServiceImplTest {
 		var expectedGame = GameDetails.builder()
 				.id(id)
 				.status(GameStatus.IN_PROGRESS)
-				.currentTurn("player1")
+				.currentTurn(List.of(new PlayerAction("player1", PlayerAction.Action.QUESTION, null),
+						new PlayerAction("player2", PlayerAction.Action.ANSWER, null),
+						new PlayerAction("player3", PlayerAction.Action.ANSWER, null),
+						new PlayerAction("player4", PlayerAction.Action.ANSWER, null)))
 				.players(listPlayerWithState)
 				.build();
 
-		assertEquals(startGame, expectedGame);
+		assertThat(startGame).isEqualTo(expectedGame);
+	}
+
+	@Test
+	void answerQuestionTest() {
+		final String id = "12345";
+		final String player = "player1";
+
+		SynchronousGame mockedGame = Mockito.mock(SynchronousGame.class);
+
+		when(gameRepository.findById(id)).thenReturn(Optional.of(mockedGame));
+		when(mockedGame.getStatus()).thenReturn(GameStatus.IN_PROGRESS);
+		when(mockedGame.findPlayer(eq(player))).thenReturn(Optional.of(new PersistentPlayer(player)));
+
+		gameService.answerQuestion(id, player, "YES");
+
+		verify(mockedGame).answerQuestion(player, VotingOptions.YES);
+	}
+
+	@Test
+	void answerQuestionNotFoundGameTest() {
+		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
+				gameService.answerQuestion("12345", "player1", "YES"));
+
+		assertEquals("404 NOT_FOUND \"Game not found or not available.\"", responseStatusException.getMessage());
+	}
+
+	@Test
+	void answerQuestionNotFoundPlayerTest() {
+		final String id = "12345";
+		final String player = "player1";
+
+		SynchronousGame mockedGame = Mockito.mock(SynchronousGame.class);
+
+		when(gameRepository.findById(id)).thenReturn(Optional.of(mockedGame));
+		when(mockedGame.getStatus()).thenReturn(GameStatus.IN_PROGRESS);
+
+		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
+				gameService.answerQuestion(id, player, "YES"));
+
+		assertEquals("404 NOT_FOUND \"Player not found\"", responseStatusException.getMessage());
 	}
 
 	@Test

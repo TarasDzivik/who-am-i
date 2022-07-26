@@ -315,7 +315,9 @@ components:
         status:
           type: string
         currentTurn:
-          type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerAction'
         players:
           type: array
           items:
@@ -360,7 +362,16 @@ components:
       type: object
       properties:
         message:
-          type: string                        
+          type: string
+    PlayerAction:
+      type: object
+      properties:
+        player:
+          type: string
+        action:
+          $ref: '#/components/schemas/Action'
+        value:
+          type: string
 #  ---- Enums section  ----------------------------------------            
     QuestionAnswer:
       type: string
@@ -376,3 +387,8 @@ components:
         - ASKING
         - ANSWERING
         - FINISHED              
+    Action:
+      type: string
+      enum:
+        - QUESTION
+        - ANSWER
