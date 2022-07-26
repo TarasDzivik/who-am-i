@@ -14,6 +14,8 @@ public interface Turn {
 
 	boolean isQuestionPresent();
 
+	boolean isAsking(String player);
+
 	boolean isAnswerer(String player);
 
 	boolean hasTurnEnded();

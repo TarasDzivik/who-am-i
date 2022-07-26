@@ -59,6 +59,11 @@ public class TurnImpl implements Turn {
 	}
 
 	@Override
+	public boolean isAsking(String player) {
+		return this.getCurrentTurn().stream().anyMatch(p -> p.getPlayer().equals(player)
+				&& p.getAction().equals(PlayerAction.Action.QUESTION));
+	}
+	@Override
 	public boolean isAnswerer(String player) {
 		return this.getCurrentTurn().stream().anyMatch(p -> p.getPlayer().equals(player)
 				&& p.getAction().equals(PlayerAction.Action.ANSWER));
