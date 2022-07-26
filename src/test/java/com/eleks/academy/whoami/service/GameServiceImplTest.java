@@ -442,4 +442,21 @@ public class GameServiceImplTest {
 
 	}
 
+	@Test
+	void askQuestionTest(){
+		final String player = "Player1";
+		final String id = "gameId";
+		final String question = "some question";
+
+		SynchronousGame mockedGame = mock(SynchronousGame.class);
+
+		when(gameRepository.findById(id)).thenReturn(Optional.of(mockedGame));
+		when(mockedGame.getStatus()).thenReturn(GameStatus.IN_PROGRESS);
+		when(mockedGame.findPlayer(eq(player))).thenReturn(Optional.of(new PersistentPlayer(player)));
+
+		gameService.askQuestion(id, player, question);
+
+		verify(mockedGame).askQuestion(player, question);
+	}
+
 }
