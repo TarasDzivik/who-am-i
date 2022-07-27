@@ -89,8 +89,9 @@ public class PersistentGame implements SynchronousGame {
 	}
 
 	@Override
-	public void askQuestion(String player, String message) {
-		//TODO: move this method to ProcessingQuestion
+	public void askQuestion(String player, String question) {
+		var a = (ProcessingQuestion) currentState.peek();
+		a.ask(player, question);
 	}
 
 	@Override

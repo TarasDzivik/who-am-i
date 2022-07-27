@@ -40,8 +40,9 @@ public final class ProcessingQuestion extends AbstractGameState {
 		return this.turn.getTurns();
 	}
 
-	public void ask(String player, PlayerAction.Action question) {
-		throw new GameException("Not implemented");
+	public void ask(String player, String question) {
+		if (!turn.isAsking(player)) throw new GameException("Please, wait for your turn");
+		turn.action(player, question);
 	}
 
 	public void answer(String player, String value) {
