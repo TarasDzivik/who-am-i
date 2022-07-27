@@ -204,9 +204,17 @@ public class GameServiceImplTest {
 		var character = persistentPlayer.getCharacter();
 		var nickName = persistentPlayer.getNickName();
 
+		CharacterSuggestion newSuggestion = new CharacterSuggestion();
+		newSuggestion.setNickName("new nickName");
+		newSuggestion.setCharacter("new character");
+
+		game.findPlayer(player).ifPresent(s->s.suggestCharacter(newSuggestion));
+
+		assertNotSame("new nickName", nickName);
+		assertNotSame("new character", character);
+
 		assertEquals(character, "Bet Monkey");
 		assertEquals(nickName, "Taras");
-
 	}
 
 	@Test

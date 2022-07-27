@@ -6,6 +6,7 @@ import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +41,12 @@ public final class SuggestingCharacters extends AbstractGameState {
 	public void setCharacters(String player, CharacterSuggestion character) {
 		SynchronousPlayer findPlayer = findPlayer(player)
 				.orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Player not found"));
-		findPlayer.suggestCharacter(character);
+		if (findPlayer.getNickName() != null) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You have already set your nickname!");
+		} else if (findPlayer.getCharacter() != null) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You have already suggest a character!");
+		} else {
+			findPlayer.suggestCharacter(character);
+		}
 	}
-
 }

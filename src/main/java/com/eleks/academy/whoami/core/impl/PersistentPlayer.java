@@ -1,9 +1,12 @@
 package com.eleks.academy.whoami.core.impl;
 
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import com.eleks.academy.whoami.core.exception.GameException;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.enums.PlayerState;
 import lombok.EqualsAndHashCode;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
 
@@ -31,7 +34,7 @@ public class PersistentPlayer implements SynchronousPlayer {
 
 	@Override
 	public String getCharacter() {
-		return character;
+		return this.character;
 	}
 
 	@Override
