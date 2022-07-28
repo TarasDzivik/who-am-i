@@ -28,9 +28,9 @@ public class TurnImplTest {
 	void turnImplConstructorTest() {
 		assertThat(new TurnImpl(players).getCurrentTurn())
 				.containsExactlyInAnyOrder(new PlayerAction("player1", PlayerAction.Action.QUESTION, null),
-				new PlayerAction("player2", PlayerAction.Action.ANSWER, null),
-				new PlayerAction("player3", PlayerAction.Action.ANSWER, null),
-				new PlayerAction("player4", PlayerAction.Action.ANSWER, null));
+						new PlayerAction("player2", PlayerAction.Action.ANSWER, null),
+						new PlayerAction("player3", PlayerAction.Action.ANSWER, null),
+						new PlayerAction("player4", PlayerAction.Action.ANSWER, null));
 	}
 
 	@Test
@@ -87,4 +87,52 @@ public class TurnImplTest {
 
 		assertEquals(turn.getTurns().get(0).get(0).getValue(), "Am I hero?");
 	}
+
+	@Test
+	void resetTurnOneTurnTest() {
+		Turn turn = new TurnImpl(players);
+
+		final List<SynchronousPlayer> newPlayers = new ArrayList<>();
+		newPlayers.add(new PersistentPlayer("player1"));
+		newPlayers.add(new PersistentPlayer("player2"));
+		newPlayers.add(new PersistentPlayer("player4"));
+
+		List<PlayerAction> expectedMakeTurn = new ArrayList<>();
+		expectedMakeTurn.add(new PlayerAction("player1", PlayerAction.Action.QUESTION, null));
+		expectedMakeTurn.add(new PlayerAction("player2", PlayerAction.Action.ANSWER, null));
+		expectedMakeTurn.add(new PlayerAction("player4", PlayerAction.Action.ANSWER, null));
+
+		turn.resetTurn(newPlayers);
+
+		assertEquals(expectedMakeTurn, turn.getCurrentTurn());
+	}
+
+	@Test
+	void resetTurnMoreOneTurnTest() {
+		Turn turn = new TurnImpl(players);
+
+		turn.action("player1", "Am I human?");
+		turn.action("player2", "YES");
+		turn.action("player3", "YES");
+		turn.action("player4", "YES");
+
+		turn.makeTurn(players, true);
+
+		final List<SynchronousPlayer> newPlayers = new ArrayList<>();
+		newPlayers.add(new PersistentPlayer("player1"));
+		newPlayers.add(new PersistentPlayer("player2"));
+		newPlayers.add(new PersistentPlayer("player4"));
+
+		turn.resetTurn(newPlayers);
+
+		assertEquals(List.of(
+				List.of(new PlayerAction("player1", PlayerAction.Action.QUESTION, "Am I human?"),
+						new PlayerAction("player2", PlayerAction.Action.ANSWER, "YES"),
+						new PlayerAction("player3", PlayerAction.Action.ANSWER, "YES"),
+						new PlayerAction("player4", PlayerAction.Action.ANSWER, "YES")),
+				List.of(new PlayerAction("player4", PlayerAction.Action.QUESTION, null),
+						new PlayerAction("player1", PlayerAction.Action.ANSWER, null),
+						new PlayerAction("player2", PlayerAction.Action.ANSWER, null))), turn.getTurns());
+	}
+
 }
