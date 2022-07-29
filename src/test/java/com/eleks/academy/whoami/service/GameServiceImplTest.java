@@ -1,6 +1,7 @@
 package com.eleks.academy.whoami.service;
 
 import com.eleks.academy.whoami.core.SynchronousGame;
+import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.action.PlayerAction;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.core.impl.PersistentPlayer;
@@ -206,7 +207,6 @@ public class GameServiceImplTest {
 
 		assertEquals(character, "Bet Monkey");
 		assertEquals(nickName, "Taras");
-
 	}
 
 	@Test
