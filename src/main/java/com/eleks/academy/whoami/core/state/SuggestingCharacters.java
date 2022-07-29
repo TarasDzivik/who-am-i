@@ -39,13 +39,13 @@ public final class SuggestingCharacters extends AbstractGameState {
 	};
 
 	public void setCharacters(String player, CharacterSuggestion character) {
-		SynchronousPlayer findPlayer = findPlayer(player)
-				.orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Player not found"));
-		if (findPlayer.getNickName() != null) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You have already set your nickname!");
-		} else if (findPlayer.getCharacter() != null) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You have already suggest a character!");
-		} else {
+			SynchronousPlayer findPlayer = findPlayer(player)
+					.orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Player not found"));
+			if (findPlayer.getNickName() != null ) {
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You have already set your nickname!");
+			}else if (findPlayer.getCharacter() != null) {
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You have already suggest a character!");
+			} else {
 			findPlayer.suggestCharacter(character);
 		}
 	}
