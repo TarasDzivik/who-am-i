@@ -7,6 +7,7 @@ import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.enums.VotingOptions;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
+import com.eleks.academy.whoami.model.request.Message;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
 import com.eleks.academy.whoami.model.response.GameDetails;
 import com.eleks.academy.whoami.model.response.GameLight;
@@ -83,7 +84,7 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public void askQuestion(String id, String player, String question) {
+	public void askQuestion(String id, String player, Message question) {
 		SynchronousGame game = this.gameRepository.findById(id)
 				.filter(g -> g.getStatus() == GameStatus.IN_PROGRESS)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, GAME_NOT_FOUND));

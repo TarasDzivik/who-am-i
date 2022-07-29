@@ -411,13 +411,14 @@ public class GameServiceImplTest {
 	void askQuestionWhenPlayerIsNotFoundTest() {
 		SynchronousGame mockedGame = mock(SynchronousGame.class);
 		final String id = mockedGame.getId();
+		Message question = new Message("some question");
 
 		when(gameRepository.findById(id)).thenReturn(Optional.of(mockedGame));
 		when(mockedGame.getStatus()).thenReturn(GameStatus.IN_PROGRESS);
 		when(mockedGame.findPlayer(eq("Player5"))).thenReturn(Optional.empty());
 
 		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
-				gameService.askQuestion(id, "Player5", "some question"));
+				gameService.askQuestion(id, "Player5", question));
 		assertEquals("404 NOT_FOUND \"Player not found\"", responseStatusException.getMessage());
 
 	}
@@ -426,7 +427,6 @@ public class GameServiceImplTest {
 	void askQuestionWhenGameIsNotFoundTest() {
 		final String player = "Player1";
 		Message message = new Message("some question");
-		var question = message.getMessage();
 
 		SynchronousGame game = new PersistentGame(player, 4);
 		final String id = game.getId();
@@ -437,7 +437,7 @@ public class GameServiceImplTest {
 		when(gameRepository.findById("id")).thenReturn(optionalSynchronousGame);
 
 		ResponseStatusException responseStatusException = assertThrows(ResponseStatusException.class, () ->
-				gameService.askQuestion("id", "Player4", question));
+				gameService.askQuestion("id", "Player4", message));
 		assertEquals("404 NOT_FOUND \"Game not found or not available.\"", responseStatusException.getMessage());
 
 	}
@@ -446,7 +446,7 @@ public class GameServiceImplTest {
 	void askQuestionTest(){
 		final String player = "Player1";
 		final String id = "gameId";
-		final String question = "some question";
+		final Message message = new Message("some question");
 
 		SynchronousGame mockedGame = mock(SynchronousGame.class);
 
@@ -454,9 +454,9 @@ public class GameServiceImplTest {
 		when(mockedGame.getStatus()).thenReturn(GameStatus.IN_PROGRESS);
 		when(mockedGame.findPlayer(eq(player))).thenReturn(Optional.of(new PersistentPlayer(player)));
 
-		gameService.askQuestion(id, player, question);
+		gameService.askQuestion(id, player, message);
 
-		verify(mockedGame).askQuestion(player, question);
+		verify(mockedGame).askQuestion(player, message);
 	}
 
 }

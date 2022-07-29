@@ -4,6 +4,7 @@ import com.eleks.academy.whoami.core.action.PlayerAction;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.enums.VotingOptions;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
+import com.eleks.academy.whoami.model.request.Message;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public interface SynchronousGame {
 
 	List<PlayerAction> getTurn();
 
-	void askQuestion(String player, String message);
+	void askQuestion(String player, Message message);
 
 	void answerQuestion(String player, VotingOptions answer);
 

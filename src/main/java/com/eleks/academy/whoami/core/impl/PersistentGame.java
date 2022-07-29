@@ -10,6 +10,7 @@ import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.enums.VotingOptions;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
+import com.eleks.academy.whoami.model.request.Message;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 import lombok.EqualsAndHashCode;
 
@@ -89,9 +90,9 @@ public class PersistentGame implements SynchronousGame {
 	}
 
 	@Override
-	public void askQuestion(String player, String question) {
+	public void askQuestion(String player, Message question) {
 		var a = (ProcessingQuestion) currentState.peek();
-		a.ask(player, question);
+		a.ask(player, question.getMessage());
 	}
 
 	@Override
